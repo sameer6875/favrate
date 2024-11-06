@@ -39,7 +39,7 @@ class _UserListScreenState extends State<UserListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Reqres Users'),
+        title: const Text('Users list'),
         actions: [
           IconButton(
             icon: const Icon(Icons.favorite),
