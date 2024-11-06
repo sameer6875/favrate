@@ -1,0 +1,50 @@
+name: "Build & Release"
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+      # - develop
+
+jobs:
+  build:
+    name: Build, Test & Release
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          distribution: "zulu"
+          java-version: "17"
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          architecture: x64
+
+      # Remove or comment out this block to skip tests
+      # - name: Run Flutter Tests
+      #   run: flutter test
+      #   continue-on-error: true
+
+      # Build APK for Android
+      - run: flutter build apk --release --split-per-abi
+
+      # Build iOS (commented out if you only need Android)
+      # - run: |
+      #     flutter build ios --no-codesign
+      #     cd build/ios/iphoneos
+      #     mkdir Payload
+      #     cd Payload
+      #     ln -s ../Runner.app
+      #     cd ..
+      #     zip -r app.ipa Payload
+
+      # Push to Releases
+      - name: Push to Releases
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "build/app/outputs/apk/release/*"  # Remove iOS artifact path
+          tag: v1.0.${{ github.run_number }}
+          token: ${{ secrets.TOKEN }}
