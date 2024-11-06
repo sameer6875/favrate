@@ -12,6 +12,7 @@ class FavoriteUsersScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: true,
         title: const Text('Favorite Users'),
       ),
       body: ListView.builder(
