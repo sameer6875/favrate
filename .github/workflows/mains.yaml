@@ -6,39 +6,48 @@ on:
   push:
     branches:
       - main
-      - develop
+      
 
 name: "Build & Release"
+
 jobs:
   build:
-    name: Build, Test & Release
+    name: Build, Test & Release for Android
     runs-on: windows-latest
     steps:
+      # Checkout the repository
       - uses: actions/checkout@v3
+
+      # Setup Java environment for Android builds
       - uses: actions/setup-java@v3
         with:
           distribution: "zulu"
-          java-version: "12"
+          java-version: "17"
+
+      # Setup Flutter environment
       - uses: subosito/flutter-action@v2
         with:
           channel: "stable"
           architecture: x64
+          flutter-version: "3.22.0"
 
       # Run Flutter tests
       - name: Run Flutter Tests
         run: flutter test
         continue-on-error: true
 
-      # Build APK for Android
-      - run: flutter build apk --release --split-per-abi
-
-      # Build iOS
      
+      # Build APK for Android
+      - name: Build APK
+        run: flutter build apk --release --verbose
 
-      # Push to Releases
+
+
+      # Push APK and App Bundle to GitHub Releases
       - name: Push to Releases
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "build/app/outputs/apk/release/*,build/ios/iphoneos/app.ipa"
+          artifacts: "build/app/outputs/apk/release/*.apk, build/app/outputs/bundle/release/*.aab,build/app/outputs/apk/release/*"
           tag: v1.0.${{ github.run_number }}
-          token: ${{ secrets.TOKEN }}
+          token: ${{ secrets.TOKEN }}
+# Above code
